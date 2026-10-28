@@ -31,7 +31,7 @@
       if (!r.ok) throw new Error('no target');
       const base = (await r.text()).trim().replace(/\/+$/, '');
       if (!/^https:\/\/[\w.-]+$/.test(base)) throw new Error('bad target');
-      location.replace(base + PAGE + '/');
+      location.replace(base + (PAGE || '/'));
     } catch {
       msg.textContent = '아직 좌석 화면이 열리지 않았어요. 잠시 후 다시 시도해 주세요.';
       retry.hidden = false;
