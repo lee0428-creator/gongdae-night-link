@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>공대인의 밤 좌석 선택</title>
+<style>
+  html, body { height: 100%; margin: 0; }
+  body { display: grid; place-items: center; background: #14110d; color: #f3eee7; font: 300 20px/1.6 system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif; text-align: center; padding: 24px; box-sizing: border-box; }
+  h1 { margin: 0 0 8px; font-size: 26px; font-weight: 300; letter-spacing: .04em; }
+  p { margin: 6px 0; color: rgba(243, 238, 231, .75); }
+  a { color: #e58c3a; }
+  button { margin-top: 18px; padding: 12px 28px; border: 1px solid rgba(255, 255, 255, .4); border-radius: 999px; background: none; color: inherit; font: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <h1>공대인의 밤</h1>
+  <p id="msg">좌석 화면으로 연결하는 중…</p>
+  <button id="retry" hidden>다시 시도</button>
+</main>
+<script>
+  // 학생 화면이 열려 있는 현재 주소는 target.txt 한 줄에만 적혀 있다 (행사 당일 이 파일만 바꾸면 된다)
+  const PAGE = '';   // 학생 화면: 주소 맨 뒤에 붙일 경로 (운영진 페이지는 '/admin')
+  const msg = document.getElementById('msg'), retry = document.getElementById('retry');
+  async function go() {
+    retry.hidden = true;
+    msg.textContent = '좌석 화면으로 연결하는 중…';
+    try {
+      const r = await fetch('target.txt?t=' + Date.now(), { cache: 'no-store' });
+      if (!r.ok) throw new Error('no target');
+      const base = (await r.text()).trim().replace(/\/+$/, '');
+      if (!/^https:\/\/[\w.-]+$/.test(base)) throw new Error('bad target');
+      location.replace(base + PAGE + '/');
+    } catch {
+      msg.textContent = '아직 좌석 화면이 열리지 않았어요. 잠시 후 다시 시도해 주세요.';
+      retry.hidden = false;
+    }
+  }
+  retry.onclick = go;
+  go();
+</script>
+</body>
+</html>
